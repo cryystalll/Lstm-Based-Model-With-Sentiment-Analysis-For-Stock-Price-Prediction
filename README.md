@@ -13,15 +13,22 @@
 ## 3. 研究方法與步驟
 ## 1.資料收集與資料預處理
 * A. 從Yahoo Finance API 取得Apple公司股票價格
+* 利用滑動視窗演算法（Sliding Window），將資料從61日開始，將每日的前60日的60筆資料包裝為此日的訓練資料，直到最後一筆訓練資料為止。目的就是要找尋跨時間資料集之間的關聯。
+* 將每筆資料標準化到（0,1）之間，避免極值（Feature Scaling），最後我們得到每份60筆的 x_train 資料，與當天的價格 y_train 資料。
 * B. 情感分析語句資料
 1. 由 Twitter API 取得全球用戶情感分析文字資料（sentence）
 2. 由 Finnhub API 取得公司新聞標題文字資料（text)
 * ![Variable Declaration](/img/p4.png)
 ## 4.訓練模型
-* A.使用Flair訓練集與NLP架構解析與篩選文本，得到語句正負極值
+## A.使用Flair訓練集與自然語言處理（NLP:Natural Language Processing）
+* 解析與篩選文本，得到語句正負極值
 * ![Variable Declaration](/img/p5.png)
-* B.使用CNN+LSTM模型
-* 在 A hybrid model integrating deep learning with investor sentiment analysis for stock price prediction(NanJingaZhaoWubHefeiWangc,2021) 提出的方法是先用情感分析資料訓練模型，再輸入歷史股價數據進行時間序列分析，此方法放大情感分析與時間序列分析的優點，平均話兩者的缺點。 跟現有的多數方法一樣是長時間的分析。
+* 一段文本中的各個單詞的特性會賦予這個集合一個實數數值，能被情感分析所辨識與計算，生成前述的文字向量。
+* 而Flair使用NLP從文字庫經由深度學習訓練好的模型，能使用在文字的解析上。
+* ![Variable Declaration](/img/p8.png)
+## B.使用CNN+LSTM模型
+* 輸入資料預處理得到的 x_train（前60天）、y_train（當天）資料訓練cnn+lstm混合模型。將用cnn得到攤平後的資料集傳入LSTM模型，單位元設為128個，input_shape為輸入資料（60,1），經過lstm三個閘門計算後輸出，最後搭配Drop out層，避免過擬合，隨機刪除節點與神經元，只選擇更新部分網路的權重(weight)，將神經網絡模型平均化，設定batch_size = 1、epoch = 1，最後得到預測結果。
+* 在論文 A hybrid model integrating deep learning with investor sentiment analysis for stock price prediction(NanJingaZhaoWubHefeiWangc,2021) 提出的方法是先用情感分析資料訓練模型，再輸入歷史股價數據進行時間序列分析，此方法放大情感分析與時間序列分析的優點，平均話兩者的缺點。 跟現有的多數方法一樣是長時間的分析。
 但參考前一篇情感分析的資料，本專題想實驗短時間內高頻率的情感分析資料與價格曲線的波動性之間的關聯性，證實他們可以修正時間序列分析的誤差。步驟是先用時間序列資料建立模型，再用短時間的大量情 感分析資料做回歸計算與集成學習模型。現有文獻大部分著重於單一模型的股票趨勢預測，如記憶式時間序列分析學習模型，或著重於社群媒體的大眾情感分析。這些單一的模型預測有一定水平的成果，但效果良 莠不齊，前者的預測有一定精準度但波動過小，往往無法反映股票價格波動的特性 ; 後者波動幅度過大，單一的情緒事件就會放大誤差，偏離原本的數據，主要問題在於他們的研究多數搜集資料的頻率過低，也因為缺少時間序列預測，只引用情感分析預測大致的價格波動。但情感資料卻是短時間內細微的變化，較好的做法是以高頻率的資料分析明確的時間點，才能最大化情感分析的效益。
 * ![Variable Declaration](/img/p2.png)
 ## 5.Results and Accuracy
@@ -29,13 +36,18 @@
      CnnLstm:        {Rsme:1.71, Mape:0.98}
 CnnLstm+Sentiment:   {Rsme:0.77, Mape:0.39}
 ```
-用前五天股價分別訓練兩種模型，預測後兩天的結果展示，可以證實加入情感分析（黃線）能有效降低預測誤差。
+用前五天股價分別訓練兩種模型，預測後兩天的結果展示，可以證實加入情感分析（黃線）能有效降低預測誤差
 * 藍線：真實股票價格
 * 紅線：cnn+lstm
 * 黃線：((cnn+lstm)+sentiment)) +regression
 * ![Variable Declaration](/img/p7.png)
-* Cnn+Lstm混合模型近四個月股價實際值與預測值比較折線
+## Cnn+Lstm混合模型近四個月股價實際值與預測值比較折線
 * ![Variable Declaration](/img/p8.png)
+## 七天內隨著時間取得高頻率股價資料與情感分析資料之間的關聯性展示
+* 七天內Apple股票收盤價高頻資料折線圖
+* ![Variable Declaration](/img/p9.png)
+* 七天內Apple股票情感分析高頻資料折線圖
+* ![Variable Declaration](/img/p10.png)
 
 
 
