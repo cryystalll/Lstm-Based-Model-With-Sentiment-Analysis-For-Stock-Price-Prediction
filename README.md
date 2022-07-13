@@ -48,6 +48,8 @@ CnnLstm+Sentiment:   {Rsme:0.77, Mape:0.39}
 * ![Variable Declaration](/img/p9.png)
 * 七天內Apple股票情感分析高頻資料折線圖
 * ![Variable Declaration](/img/p10.png)
+* 依序為真實股價、cnn+lstm混合模型預測值、情感分析極值、混合模型加上情感分析優化之預測值
+* * ![Variable Declaration](/img/pp.png)
 
 
 
