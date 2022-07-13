@@ -26,9 +26,8 @@
 * ![Variable Declaration](/img/p2.png)
 ## 5.Results and Accuracy
 ```
-{"event": "status_up", "frame_number": 428}, 
-{"event": "flag_reached", "frame_number": 1915}, 
-{"event": "new_stage", "frame_number": 1916},...
+     CnnLstm:        {Rsme:1.71, Mape:0.98}
+CnnLstm+Sentiment:   {Rsme:0.77, Mape:0.39}
 ```
 用前五天股價分別訓練兩種模型，預測後兩天的結果展示，可以證實加入情感分析（黃線）能有效降低預測誤差。
 * 藍線：真實股票價格
